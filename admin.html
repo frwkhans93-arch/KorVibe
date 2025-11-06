@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم KorVibe - المشرف</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0f0f0f;
+            color: white;
+            direction: rtl;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, #e50914, #b2070f);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(229, 9, 20, 0.3);
+            position: relative;
+        }
+        
+        .admin-nav {
+            background: #1a1a1a;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            border-bottom: 2px solid #333;
+        }
+        
+        .nav-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-btn.active {
+            background: #e50914;
+            transform: scale(1.05);
+        }
+        
+        .admin-content {
+            padding: 2rem;
+            padding-bottom: 3rem;
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #333;
+            text-align: center;
+        }
+        
+        .card h3 {
+            color: #e50914;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .section {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 1.5rem 0;
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin: 1.2rem 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #e50914;
+            font-weight: bold;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            border-color: #e50914;
+            outline: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #e50914, #ff1a1a);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #333;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #2a2a2a;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table th, .table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #333;
+        }
+        
+        .table th {
+            background: #e50914;
+            color: white;
+        }
+        
+        .table tr:hover {
+            background: #333;
+        }
+        
+        .action-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 2px;
+            font-size: 0.8rem;
+        }
+        
+        .action-btn.edit { background: #007bff; }
+        .action-btn.delete { background: #dc3545; }
+        .action-btn.view { background: #28a745; }
+        .action-btn.email { background: #ffd700; color: #000; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .stat-item {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        .user-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 3000;
+            overflow-y: auto;
+        }
+        
+        .user-detail-content {
+            background: #1a1a1a;
+            margin: 50px auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .activity-log {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #333;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            background: #e50914;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-right: 5px;
+        }
+        
+        .online-badge { background: #28a745; }
+        .offline-badge { background: #dc3545; }
+        .premium-badge { background: #ffd700; color: #000; }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .tab-btn.active {
+            background: #e50914;
+        }
+        
+        .email-notification {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <!-- هيدر لوحة التحكم -->
+    <header class="admin-header">
+        <button class="logout-btn" onclick="logout()">🚪 خروج</button>
+        <h1>🎛️ لوحة تحكم KorVibe</h1>
+        <p>التحكم الكامل في التطبيق والمستخدمين</p>
+    </header>
+    
+    <!-- شريط التنقل -->
+    <nav class="admin-nav">
+        <button class="nav-btn active" onclick="showSection('dashboard')">📊 لوحة التحكم</button>
+        <button class="nav-btn" onclick="showSection('users')">👥 إدارة المستخدمين</button>
+        <button class="nav-btn" onclick="showSection('series')">🎬 إدارة المسلسلات</button>
+        <button class="nav-btn" onclick="showSection('analytics')">📈 التحليلات</button>
+        <button class="nav-btn" onclick="showSection('notifications')">🔔 الإشعارات</button>
+        <button class="nav-btn" onclick="showSection('settings')">⚙️ الإعدادات</button>
+    </nav>
+    
+    <!-- المحتوى الرئيسي -->
+    <div class="admin-content">
+        
+        <!-- لوحة التحكم الرئيسية -->
+        <div id="dashboard" class="section active">
+            <h2>📊 نظرة عامة</h2>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>👥 المستخدمين</h3>
+                    <div class="number" id="total-users">0</div>
+                    <p>إجمالي المستخدمين المسجلين</p>
+                </div>
+                <div class="card">
+                    <h3>🎬 المسلسلات</h3>
+                    <div class="number" id="total-series">0</div>
+                    <p>إجمالي المسلسلات المضافة</p>
+                </div>
+                <div class="card">
+                    <h3>📺 المشاهدات</h3>
+                    <div class="number" id="total-views">0</div>
+                    <p>إجمالي مرات المشاهدة</p>
+                </div>
+                <div class="card">
+                    <h3>💰 الإيرادات</h3>
+                    <div class="number" id="total-revenue">0$</div>
+                    <p>إجمالي الإيرادات</p>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h4>📱 المستخدمين النشطين</h4>
+                    <div style="font-size: 1.5rem; color: #28a745;" id="active-users">0</div>
+                </div>
+                <div class="stat-item">
+                    <h4>⭐ متوسط التقييم</h4>
+                    <div style="font-size: 1.5rem; color: #ffd700;" id="avg-rating">0</div>
+                </div>
+                <div class="stat-item">
+                    <h4>🎯 نسبة الاحتفاظ</h4>
+                    <div style="font-size: 1.5rem; color: #007bff;" id="retention-rate">0%</div>
+                </div>
+                <div class="stat-item">
+                    <h4>📧 اشتراكات البريد</h4>
+                    <div style="font-size: 1.5rem; color: #ffd700;" id="email-subscribers">0</div>
+                </div>
+            </div>
+            
+            <div class="email-notification">
+                <h4>📧 إشعارات البريد الإلكتروني</h4>
+                <p>سيصلك إشعار على frwkhans93@gmail.com عند كل تسجيل جديد</p>
+                <button class="btn" onclick="testEmailNotification()">🧪 اختبار الإشعار</button>
+            </div>
+        </div>
+        
+        <!-- إدارة المستخدمين -->
+        <div id="users" class="section">
+            <h2>👥 إدارة المستخدمين</h2>
+            
+            <div class="form-group">
+                <input type="text" id="search-users" placeholder="🔍 بحث في المستخدمين..." onkeyup="searchUsers()">
+            </div>
+            
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>البريد</th>
+                        <th>النقاط</th>
+                        <th>المستوى</th>
+                        <th>آخر دخول</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list">
+                    <!-- المستخدمين يظهرون هنا -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- إدارة المسلسلات -->
+        <div id="series" class="section">
+            <h2>🎬 إدارة المسلسلات</h2>
+            
+            <div class="form-group">
+                <h3>➕ إضافة مسلسل جديد</h3>
+                <input type="text" id="series-title" placeholder="اسم المسلسل">
+                <input type="text" id="series-emoji" placeholder="الإيموجي (مثال: 💖)">
+                <input type="number" id="series-rating" placeholder="التقييم (1-5)" min="1" max="5" step="0.1">
+                <input type="number" id="series-episodes" placeholder="عدد الحلقات">
+                <input type="text" id="series-year" placeholder="سنة الإنتاج">
+                <input type="color" id="series-color" value="#ff6b6b">
+                <textarea id="series-description" placeholder="وصف المسلسل" rows="3"></textarea>
+                <button class="btn" onclick="addSeries()">إضافة المسلسل</button>
+            </div>
+            
+            <h3>📋 المسلسلات المضافة</h3>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>الإيموجي</th>
+                            <th>اسم المسلسل</th>
+                            <th>التقييم</th>
+                            <th>الحلقات</th>
+                            <th>المشاهدات</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="series-list">
+                        <!-- المسلسلات تظهر هنا -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- التحليلات -->
+        <div id="analytics" class="section">
+            <h2>📈 التحليلات والتقارير</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h4>📅 مستخدمين جدد اليوم</h4>
+                    <div style="font-size: 1.5rem; color: #28a745;" id="new-users-today">0</div>
+                </div>
+                <div class="stat-item">
+                    <h4>🎬 مشاهدات اليوم</h4>
+                    <div style="font-size: 1.5rem; color: #007bff;" id="views-today">0</div>
+                </div>
+                <div class="stat-item">
+                    <h4>💰 إيرادات اليوم</h4>
+                    <div style="font-size: 1.5rem; color: #ffd700;" id="revenue-today">0$</div>
+                </div>
+                <div class="stat-item">
+                    <h4>📊 متوسط الجلسة</h4>
+                    <div style="font-size: 1.5rem; color: #e50914;" id="avg-session">0 د</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <h4>📋 تقرير النشاط</h4>
+                <div class="activity-log" id="activity-log">
+                    <!-- سجل النشاط -->
+                </div>
+            </div>
+            
+            <button class="btn" onclick="generateReport()">📥 تصدير تقرير</button>
+            <button class="btn btn-secondary" onclick="sendDailyReport()">📧 إرسال تقرير يومي</button>
+        </div>
+        
+        <!-- الإشعارات -->
+        <div id="notifications" class="section">
+            <h2>🔔 إدارة الإشعارات</h2>
+            
+            <div class="form-group">
+                <h4>📧 إشعارات البريد الإلكتروني</h4>
+                <label>
+                    <input type="checkbox" id="email-new-users" checked>
+                    إشعار عند تسجيل مستخدم جديد
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="email-payments">
+                    إشعار عند عمليات الدفع
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" id="email-reports">
+                    إشعارات التقارير اليومية
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <h4>🔔 إشعارات التطبيق</h4>
+                <input type="text" id="notification-title" placeholder="عنوان الإشعار">
+                <textarea id="notification-message" placeholder="نص الإشعار" rows="3"></textarea>
+                <button class="btn" onclick="sendNotificationToAll()">📤 إرسال للجميع</button>
+            </div>
+        </div>
+        
+        <!-- الإعدادات -->
+        <div id="settings" class="section">
+            <h2>⚙️ إعدادات النظام</h2>
+            
+            <div class="form-group">
+                <h4>🎯 إعدادات التطبيق</h4>
+                <label>اسم التطبيق:</label>
+                <input type="text" id="app-name" value="KorVibe">
+                
+                <label>وصف التطبيق:</label>
+                <textarea id="app-description" rows="2">مسلسلات كورية في مقاطع قصيرة</textarea>
+                
+                <label>سعر الاشتراك الشهري ($):</label>
+                <input type="number" id="subscription-price" value="5">
+                
+                <label>عدد الإعلانات بين المقاطع:</label>
+                <input type="number" id="ads-frequency" value="2" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <h4>🎨 إعدادات المظهر</h4>
+                <label>اللون الرئيسي:</label>
+                <input type="color" id="primary-color" value="#e50914">
+                
+                <label>لون الخلفية:</label>
+                <input type="color" id="bg-color" value="#0f0f0f">
+            </div>
+            
+            <button class="btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+            <button class="btn btn-secondary" onclick="resetSettings()">🔄 إعادة تعيين</button>
+        </div>
+    </div>
+    
+    <!-- نافذة تفاصيل المستخدم -->
+    <div class="user-detail-modal" id="user-detail-modal">
+        <div class="user-detail-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 id="user-detail-name">تفاصيل المستخدم</h2>
+                <button onclick="closeUserDetail()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showUserTab('info')">📊 المعلومات</button>
+                <button class="tab-btn" onclick="showUserTab('activity')">📈 النشاط</button>
+                <button class="tab-btn" onclick="showUserTab('watch')">🎬 المشاهدات</button>
+                <button class="tab-btn" onclick="showUserTab('friends')">👥 الأصدقاء</button>
+                <button class="tab-btn" onclick="showUserTab('payments')">💳 المدفوعات</button>
+            </div>
+            
+            <div id="user-info-tab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h4>🪙 النقاط</h4>
+                        <div id="user-detail-points">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <h4>⭐ المستوى</h4>
+                        <div id="user-detail-level">1</div>
+                    </div>
+                    <div class="stat-item">
+                        <h4>📺 المشاهدات</h4>
+                        <div id="user-detail-views">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <h4>💵 إجمالي الدفع</h4>
+                        <div id="user-detail-payments">0$</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <h4>📧 معلومات الاتصال</h4>
+                    <p>البريد: <span id="user-detail-email"></span></p>
+                    <p>تاريخ التسجيل: <span id="user-detail-joined"></span></p>
+                    <p>آخر دخول: <span id="user-detail-lastlogin"></span></p>
+                </div>
+            </div>
+            
+            <div id="user-activity-tab" class="tab-content" style="display: none;">
+                <h4>📊 سجل النشاط</h4>
+                <div class="activity-log" id="user-activity-log">
+                    <!-- نشاط المستخدم -->
+                </div>
+            </div>
+            
+            <div id="user-watch-tab" class="tab-content" style="display: none;">
+                <h4>🎬 سجل المشاهدات</h4>
+                <div class="activity-log" id="user-watch-history">
+                    <!-- مشاهدات المستخدم -->
+                </div>
+            </div>
+            
+            <div id="user-friends-tab" class="tab-content" style="display: none;">
+                <h4>👥 قائمة الأصدقاء</h4>
+                <div id="user-friends-list">
+                    <!-- أصدقاء المستخدم -->
+                </div>
+            </div>
+            
+            <div id="user-payments-tab" class="tab-content" style="display: none;">
+                <h4>💳 سجل المدفوعات</h4>
+                <div id="user-payments-history">
+                    <!-- مدفوعات المستخدم -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // نظام إدارة لوحة التحكم المتكامل
+        class AdminManager {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('korvibe_users') || '[]');
+                this.series = JSON.parse(localStorage.getItem('korvibe_series') || '[]');
+                this.activities = JSON.parse(localStorage.getItem('korvibe_activities') || '[]');
+                this.settings = JSON.parse(localStorage.getItem('korvibe_settings') || this.getDefaultSettings());
+                this.watchHistory = JSON.parse(localStorage.getItem('korvibe_watchHistory') || '[]');
+                this.payments = JSON.parse(localStorage.getItem('korvibe_payments') || '[]');
+                this.friends = JSON.parse(localStorage.getItem('korvibe_friends') || '[]');
+                
+                this.adminEmail = "frwkhans93@gmail.com";
+                this.currentViewingUser = null;
+                
+                this.loadDashboard();
+            }
+            
+            getDefaultSettings() {
+                return {
+                    appName: "KorVibe",
+                    appDescription: "مسلسلات كورية في مقاطع قصيرة",
+                    subscriptionPrice: 5,
+                    adsFrequency: 2,
+                    primaryColor: "#e50914",
+                    bgColor: "#0f0f0f",
+                    emailNotifications: true,
+                    autoReports: false
+                };
+            }
+            
+            loadDashboard() {
+                // تحديث الإحصائيات
+                this.updateStatistics();
+                this.loadUsersList();
+                this.loadSeriesList();
+                this.loadActivityLog();
+                this.loadSettings();
+            }
+            
+            updateStatistics() {
+                document.getElementById('total-users').textContent = this.users.length;
+                document.getElementById('total-series').textContent = this.series.length;
+                document.getElementById('total-views').textContent = this.watchHistory.length;
+                document.getElementById('total-revenue').textContent = this.payments.reduce((sum, p) => sum + p.amount, 0) + "$";
+                
+                document.getElementById('active-users').textContent = this.users.filter(u => this.isUserActive(u)).length;
+                document.getElementById('avg-rating').textContent = this.series.length > 0 ? 
+                    (this.series.reduce((sum, s) => sum + s.rating, 0) / this.series.length).toFixed(1) : "0";
+                document.getElementById('retention-rate').textContent = this.calculateRetentionRate() + "%";
+                document.getElementById('email-subscribers').textContent = this.users.filter(u => u.emailNotifications !== false).length;
+                
+                // إحصائيات اليوم
+                const today = new Date().toDateString();
+                document.getElementById('new-users-today').textContent = this.users.filter(u => 
+                    new Date(u.joinedAt).toDateString() === today
+                ).length;
+                
+                document.getElementById('views-today').textContent = this.watchHistory.filter(w => 
+                    new Date(w.timestamp).toDateString() === today
+                ).length;
+                
+                document.getElementById('revenue-today').textContent = this.payments.filter(p => 
+                    new Date(p.date).toDateString() === today
+                ).reduce((sum, p) => sum + p.amount, 0) + "$";
+                
+                document.getElementById('avg-session').textContent = this.calculateAverageSession() + " د";
+            }
+            
+            isUserActive(user) {
+                const lastLogin = new Date(user.lastLogin);
+                const today = new Date();
+                return (today - lastLogin) < (7 * 24 * 60 * 60 * 1000);
+            }
+            
+            calculateRetentionRate() {
+                const totalUsers = this.users.length;
+                const activeUsers = this.users.filter(u => this.isUserActive(u)).length;
+                return totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0;
+            }
+            
+            calculateAverageSession() {
+                // محاكاة متوسط الجلسة
+                return Math.floor(Math.random() * 15) + 5;
+            }
+            
+            // إدارة المستخدمين
+            loadUsersList() {
+                const container = document.getElementById('users-list');
+                container.innerHTML = this.users.map(user => `
+                    <tr>
+                        <td>
+                            <strong>${user.name}</strong>
+                            ${user.isAdmin ? '<span class="badge">👑 مشرف</span>' : ''}
+                            ${user.isPremium ? '<span class="badge premium-badge">💎 مميز</span>' : ''}
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${user.points || 0}</td>
+                        <td>${user.level || 1}</td>
+                        <td>${new Date(user.lastLogin).toLocaleDateString('ar-EG')}</td>
+                        <td>
+                            <span class="badge ${this.isUserActive(user) ? 'online-badge' : 'offline-badge'}">
+                                ${this.isUserActive(user) ? '🟢 نشط' : '🔴 غير نشط'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view" onclick="adminManager.viewUserDetail(${user.id})">عرض</button>
+                            <button class="action-btn email" onclick="adminManager.sendEmailToUser('${user.email}')">📧</button>
+                            <button class="action-btn edit" onclick="adminManager.editUser(${user.id})">تعديل</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            viewUserDetail(userId) {
+                this.currentViewingUser = this.users.find(u => u.id === userId);
+                if (!this.currentViewingUser) return;
+                
+                // تحديث المعلومات الأساسية
+                document.getElementById('user-detail-name').textContent = this.currentViewingUser.name;
+                document.getElementById('user-detail-points').textContent = this.currentViewingUser.points || 0;
+                document.getElementById('user-detail-level').textContent = this.currentViewingUser.level || 1;
+                document.getElementById('user-detail-views').textContent = this.watchHistory.filter(w => w.userId === userId).length;
+                document.getElementById('user-detail-payments').textContent = this.payments.filter(p => p.userId === userId).reduce((sum, p) => sum + p.amount, 0) + "$";
+                document.getElementById('user-detail-email').textContent = this.currentViewingUser.email;
+                document.getElementById('user-detail-joined').textContent = new Date(this.currentViewingUser.joinedAt).toLocaleDateString('ar-EG');
+                document.getElementById('user-detail-lastlogin').textContent = new Date(this.currentViewingUser.lastLogin).toLocaleDateString('ar-EG');
+                
+                // تحميل سجل النشاط
+                this.loadUserActivity(userId);
+                this.loadUserWatchHistory(userId);
+                this.loadUserFriends(userId);
+                this.loadUserPayments(userId);
+                
+                // إظهار النافذة
+                document.getElementById('user-detail-modal').style.display = 'block';
+                this.showUserTab('info');
+            }
+            
+            loadUserActivity(userId) {
+                const userActivities = this.activities.filter(a => a.data.email === this.currentViewingUser.email);
+                const container = document.getElementById('user-activity-log');
+                
+                container.innerHTML = userActivities.slice(-20).map(activity => `
+                    <div class="activity-item">
+                        <strong>${this.getActivityTypeText(activity.type)}</strong>
+                        <div style="color: #ccc; font-size: 0.8rem;">${new Date(activity.timestamp).toLocaleString('ar-EG')}</div>
+                        ${activity.data.reason ? `<div style="color: #ff6b6b;">سبب: ${activity.data.reason}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            loadUserWatchHistory(userId) {
+                const userWatchHistory = this.watchHistory.filter(w => w.userId === userId);
+                const container = document.getElementById('user-watch-history');
+                
+                container.innerHTML = userWatchHistory.slice(-10).map(watch => {
+                    const series = this.series.find(s => s.id === watch.seriesId);
+                    return `
+                        <div class="activity-item">
+                            <strong>${series ? series.title : 'مسلسل محذوف'}</strong>
+                            <div style="color: #ccc; font-size: 0.8rem;">${new Date(watch.timestamp).toLocaleString('ar-EG')}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            loadUserFriends(userId) {
+                const userFriends = this.friends.filter(f => f.userId === userId);
+                const container = document.getElementById('user-friends-list');
+                
+                container.innerHTML = userFriends.length > 0 ? 
+                    userFriends.map(friend => {
+                        const friendUser = this.users.find(u => u.id === friend.friendId);
+                        return `
+                            <div class="activity-item">
+                                <strong>${friendUser ? friendUser.name : 'مستخدم محذوف'}</strong>
+                                <span class="badge ${this.isUserActive(friendUser) ? 'online-badge' : 'offline-badge'}">
+                                    ${this.isUserActive(friendUser) ? '🟢' : '🔴'}
+                                </span>
+                                <div style="color: #ccc; font-size: 0.8rem;">تاريخ الصداقة: ${new Date(friend.date).toLocaleDateString('ar-EG')}</div>
+                            </div>
+                        `;
+                    }).join('') :
+                    '<div style="text-align: center; color: #ccc; padding: 2rem;">لا يوجد أصدقاء</div>';
+            }
+            
+            loadUserPayments(userId) {
+                const userPayments = this.payments.filter(p => p.userId === userId);
+                const container = document.getElementById('user-payments-history');
+                
+                container.innerHTML = userPayments.length > 0 ? 
+                    userPayments.map(payment => `
+                        <div class="activity-item">
+                            <strong>💰 ${payment.amount}$ - ${payment.type === 'subscription' ? 'اشتراك' : 'شراء نقاط'}</strong>
+                            <div style="color: #ccc; font-size: 0.8rem;">${new Date(payment.date).toLocaleString('ar-EG')}</div>
+                            ${payment.method ? `<div style="color: #28a745;">طريقة الدفع: ${payment.method}</div>` : ''}
+                        </div>
+                    `).join('') :
+                    '<div style="text-align: center; color: #ccc; padding: 2rem;">لا توجد مدفوعات</div>';
+            }
+            
+            getActivityTypeText(type) {
+                const types = {
+                    'user_registered': '📝 تسجيل مستخدم جديد',
+                    'login_success': '🔐 تسجيل دخول ناجح',
+                    'login_failed': '❌ محاولة دخول فاشلة',
+                    'logout': '🚪 تسجيل خروج',
+                    'video_watched': '🎬 مشاهدة فيديو',
+                    'ad_watched': '🎪 مشاهدة إعلان',
+                    'payment_success': '💳 عملية دفع ناجحة'
+                };
+                return types[type] || type;
+            }
+            
+            searchUsers() {
+                const searchTerm = document.getElementById('search-users').value.toLowerCase();
+                const filteredUsers = this.users.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) || 
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+                
+                const container = document.getElementById('users-list');
+                container.innerHTML = filteredUsers.map(user => `
+                    <tr>
+                        <td>
+                            <strong>${user.name}</strong>
+                            ${user.isAdmin ? '<span class="badge">👑 مشرف</span>' : ''}
+                            ${user.isPremium ? '<span class="badge premium-badge">💎 مميز</span>' : ''}
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${user.points || 0}</td>
+                        <td>${user.level || 1}</td>
+                        <td>${new Date(user.lastLogin).toLocaleDateString('ar-EG')}</td>
+                        <td>
+                            <span class="badge ${this.isUserActive(user) ? 'online-badge' : 'offline-badge'}">
+                                ${this.isUserActive(user) ? '🟢 نشط' : '🔴 غير نشط'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="action-btn view" onclick="adminManager.viewUserDetail(${user.id})">عرض</button>
+                            <button class="action-btn email" onclick="adminManager.sendEmailToUser('${user.email}')">📧</button>
+                            <button class="action-btn edit" onclick="adminManager.editUser(${user.id})">تعديل</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            sendEmailToUser(email) {
+                const subject = prompt("عنوان البريد الإلكتروني:");
+                const message = prompt("نص الرسالة:");
+                
+                if (subject && message) {
+                    // في الواقع، هنا ستتكامل مع خدمة البريد
+                    this.logActivity('admin_email_sent', { to: email, subject, message });
+                    alert(`📧 تم إرسال بريد إلى ${email}`);
+                    
+                    // محاكاة إرسال إشعار للمشرف
+                    this.sendAdminNotification(`تم إرسال بريد إلى ${email}`);
+                }
+            }
+            
+            sendAdminNotification(message) {
+                // إشعار وهمي - في الواقع سيرسل بريد حقيقي
+                console.log(`📧 إشعار للمشرف: ${message}`);
+                alert(`📧 سيصلك إشعار على ${this.adminEmail}: ${message}`);
+            }
+            
+            // إدارة المسلسلات
+            addSeries() {
+                const series = {
+                    id: Date.now(),
+                    title: document.getElementById('series-title').value,
+                    emoji: document.getElementById('series-emoji').value,
+                    rating: parseFloat(document.getElementById('series-rating').value),
+                    episodes: parseInt(document.getElementById('series-episodes').value),
+                    year: document.getElementById('series-year').value,
+                    color: document.getElementById('series-color').value,
+                    description: document.getElementById('series-description').value,
+                    views: 0,
+                    addedAt: new Date().toISOString(),
+                    isNew: true
+                };
+                
+                this.series.push(series);
+                this.saveSeries();
+                this.loadSeriesList();
+                this.clearSeriesForm();
+                
+                this.logActivity('series_added', { title: series.title });
+                alert('تم إضافة المسلسل بنجاح!');
+            }
+            
+            loadSeriesList() {
+                const container = document.getElementById('series-list');
+                container.innerHTML = this.series.map(series => `
+                    <tr>
+                        <td>${series.emoji}</td>
+                        <td>${series.title}</td>
+                        <td>${'★'.repeat(Math.floor(series.rating))}${'☆'.repeat(5-Math.floor(series.rating))} ${series.rating}</td>
+                        <td>${series.episodes}</td>
+                        <td>${series.views || 0}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="adminManager.editSeries(${series.id})">تعديل</button>
+                            <button class="action-btn delete" onclick="adminManager.deleteSeries(${series.id})">حذف</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // الإعدادات
+            loadSettings() {
+                document.getElementById('app-name').value = this.settings.appName;
+                document.getElementById('app-description').value = this.settings.appDescription;
+                document.getElementById('subscription-price').value = this.settings.subscriptionPrice;
+                document.getElementById('ads-frequency').value = this.settings.adsFrequency;
+                document.getElementById('primary-color').value = this.settings.primaryColor;
+                document.getElementById('bg-color').value = this.settings.bgColor;
+                document.getElementById('email-new-users').checked = this.settings.emailNotifications;
+            }
+            
+            saveSettings() {
+                this.settings = {
+                    appName: document.getElementById('app-name').value,
+                    appDescription: document.getElementById('app-description').value,
+                    subscriptionPrice: parseFloat(document.getElementById('subscription-price').value),
+                    adsFrequency: parseInt(document.getElementById('ads-frequency').value),
+                    primaryColor: document.getElementById('primary-color').value,
+                    bgColor: document.getElementById('bg-color').value,
+                    emailNotifications: document.getElementById('email-new-users').checked
+                };
+                
+                this.save();
+                alert('تم حفظ الإعدادات بنجاح!');
+            }
+            
+            // التقارير
+            loadActivityLog() {
+                const container = document.getElementById('activity-log');
+                container.innerHTML = this.activities.slice(-20).map(activity => `
+                    <div class="activity-item">
+                        <strong>${this.getActivityTypeText(activity.type)}</strong>
+                        <div style="color: #ccc; font-size: 0.8rem;">
+                            ${new Date(activity.timestamp).toLocaleString('ar-EG')} | 
+                            ${activity.data.email || 'النظام'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            generateReport() {
+                const report = `
+تقرير KorVibe - ${new Date().toLocaleDateString('ar-EG')}
+
+👥 المستخدمين: ${this.users.length}
+🎬 المسلسلات: ${this.series.length}
+📺 المشاهدات: ${this.watchHistory.length}
+💰 الإيرادات: ${this.payments.reduce((sum, p) => sum + p.amount, 0)}$
+
+📈 المستخدمين النشطين: ${this.users.filter(u => this.isUserActive(u)).length}
+⭐ متوسط التقييم: ${this.series.length > 0 ? (this.series.reduce((sum, s) => sum + s.rating, 0) / this.series.length).toFixed(1) : "0"}
+🎯 نسبة الاحتفاظ: ${this.calculateRetentionRate()}%
+
+📊 نشاط اليوم:
+- مستخدمين جدد: ${this.users.filter(u => new Date(u.joinedAt).toDateString() === new Date().toDateString()).length}
+- مشاهدات: ${this.watchHistory.filter(w => new Date(w.timestamp).toDateString() === new Date().toDateString()).length}
+- إيرادات: ${this.payments.filter(p => new Date(p.date).toDateString() === new Date().toDateString()).reduce((sum, p) => sum + p.amount, 0)}$
+                `.trim();
+                
+                alert('📥 تم إنشاء التقرير:\n\n' + report);
+            }
+            
+            sendDailyReport() {
+                this.generateReport();
+                this.sendAdminNotification("📊 تم إرسال التقرير اليومي");
+            }
+            
+            testEmailNotification() {
+                this.sendAdminNotification("🧪 هذا اختبار لإشعارات البريد الإلكتروني");
+            }
+            
+            // أدوات مساعدة
+            clearSeriesForm() {
+                document.getElementById('series-title').value = '';
+                document.getElementById('series-emoji').value = '';
+                document.getElementById('series-rating').value = '';
+                document.getElementById('series-episodes').value = '';
+                document.getElementById('series-year').value = '';
+                document.getElementById('series-color').value = '#ff6b6b';
+                document.getElementById('series-description').value = '';
+            }
+            
+            logActivity(type, data) {
+                this.activities.push({
+                    type,
+                    data,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                });
+                
+                if (this.activities.length > 500) {
+                    this.activities.shift();
+                }
+                
+                this.saveActivities();
+                this.loadActivityLog();
+            }
+            
+            // دوال الحفظ
+            save() {
+                localStorage.setItem('korvibe_settings', JSON.stringify(this.settings));
+            }
+            
+            saveSeries() {
+                localStorage.setItem('korvibe_series', JSON.stringify(this.series));
+            }
+            
+            saveActivities() {
+                localStorage.setItem('korvibe_activities', JSON.stringify(this.activities));
+            }
+        }
+
+        // إنشاء مدير الإدارة
+        const adminManager = new AdminManager();
+
+        // دوال الواجهة
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const navBtns = document.querySelectorAll('.nav-btn');
+            for (let btn of navBtns) {
+                if (btn.onclick && btn.onclick.toString().includes(sectionId)) {
+                    btn.classList.add('active');
+                    break;
+                }
+            }
+        }
+
+        function showUserTab(tabId) {
+            // إخفاء كل التبويبات
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // إظهار التبويب المطلوب
+            document.getElementById(`user-${tabId}-tab`).style.display = 'block';
+            
+            // تحديث أزرار التبويبات
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function closeUserDetail() {
+            document.getElementById('user-detail-modal').style.display = 'none';
+        }
+
+        function searchUsers() {
+            adminManager.searchUsers();
+        }
+
+        function addSeries() {
+            adminManager.addSeries();
+        }
+
+        function saveSettings() {
+            adminManager.saveSettings();
+        }
+
+        function resetSettings() {
+            if (confirm('هل تريد إعادة تعيين جميع الإعدادات؟')) {
+                adminManager.settings = adminManager.getDefaultSettings();
+                adminManager.loadSettings();
+                adminManager.save();
+                alert('تم إعادة تعيين الإعدادات!');
+            }
+        }
+
+        function generateReport() {
+            adminManager.generateReport();
+        }
+
+        function sendDailyReport() {
+            adminManager.sendDailyReport();
+        }
+
+        function testEmailNotification() {
+            adminManager.testEmailNotification();
+        }
+
+        function sendNotificationToAll() {
+            alert('📤 سيتم إرسال إشعار لجميع المستخدمين');
+        }
+
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج من لوحة التحكم؟')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // دوال محاكاة
+        function editUser(id) {
+            alert(`🚧 تعديل المستخدم ${id} - هذه الميزة قيد التطوير`);
+        }
+
+        function editSeries(id) {
+            alert(`🚧 تعديل المسلسل ${id} - هذه الميزة قيد التطوير`);
+        }
+
+        function deleteSeries(id) {
+            if (confirm('هل تريد حذف هذا المسلسل؟')) {
+                adminManager.series = adminManager.series.filter(s => s.id !== id);
+                adminManager.saveSeries();
+                adminManager.loadSeriesList();
+                adminManager.loadDashboard();
+            }
+        }
+
+        // التحقق من صلاحية المشرف
+        const currentUser = JSON.parse(localStorage.getItem('korvibe_currentUser') || 'null');
+        if (!currentUser || !currentUser.isAdmin) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
