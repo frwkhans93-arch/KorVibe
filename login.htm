@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KorVibe - تسجيل الدخول</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #0f0f0f;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+        }
+        
+        .login-container {
+            background: #1a1a1a;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            border: 2px solid #e50914;
+            box-shadow: 0 10px 30px rgba(229, 9, 20, 0.3);
+            position: relative;
+        }
+        
+        .admin-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #ffd700;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        h1 {
+            color: #e50914;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            color: #ccc;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin: 1.2rem 0;
+            text-align: right;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            background: #2a2a2a;
+            color: white;
+            border: 2px solid #333;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #e50914;
+            outline: none;
+            transform: scale(1.02);
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #e50914, #ff1a1a);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 15px 0;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+        
+        .switch-form {
+            margin-top: 1.5rem;
+            color: #ccc;
+        }
+        
+        .switch-btn {
+            color: #e50914;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .admin-info {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #ffd700;
+            border: 1px solid #ffd700;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .feature {
+            background: #2a2a2a;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+        
+        .strength-weak { color: #ff6b6b; }
+        .strength-medium { color: #ffa500; }
+        .strength-strong { color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="admin-badge">المشرفين</div>
+        <div class="logo">🎬</div>
+        <h1>KorVibe</h1>
+        <p class="subtitle">مسلسلات كورية في مقاطع قصيرة</p>
+        
+        <!-- نموذج تسجيل الدخول -->
+        <div id="login-form">
+            <div class="form-group">
+                <input type="email" id="login-email" placeholder="📧 البريد الإلكتروني" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" placeholder="🔒 كلمة المرور" required>
+                <div class="password-strength" id="login-strength"></div>
+            </div>
+            <button onclick="login()">🎯 تسجيل الدخول</button>
+            <div class="switch-form">
+                ليس لديك حساب؟ 
+                <span class="switch-btn" onclick="showRegister()">سجل الآن</span>
+            </div>
+        </div>
+        
+        <!-- نموذج التسجيل -->
+        <div id="register-form" style="display: none;">
+            <div class="form-group">
+                <input type="text" id="register-name" placeholder="👤 الاسم الكامل" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="register-email" placeholder="📧 البريد الإلكتروني" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="register-password" placeholder="🔒 كلمة المرور" required onkeyup="checkPasswordStrength(this.value)">
+                <div class="password-strength" id="register-strength"></div>
+            </div>
+            <div class="form-group">
+                <input type="password" id="register-confirm" placeholder="✅ تأكيد كلمة المرور" required>
+            </div>
+            <button onclick="register()">🚀 إنشاء حساب</button>
+            <div class="switch-form">
+                لديك حساب؟ 
+                <span class="switch-btn" onclick="showLogin()">سجل الدخول</span>
+            </div>
+        </div>
+        
+        <div class="error-message" id="error-message">
+            ❌ بيانات الدخول غير صحيحة
+        </div>
+        
+        <div class="admin-info">
+            💡 للمشرفين: استخدم بريدك الخاص للوصول إلى لوحة التحكم
+        </div>
+        
+        <div class="features">
+            <div class="feature">🎬 مقاطع 2-3 دقائق</div>
+            <div class="feature">⭐ تقييمات حقيقية</div>
+            <div class="feature">💝 نظام المفضلة</div>
+            <div class="feature">📱 متوافق مع جميع الأجهزة</div>
+        </div>
+    </div>
+
+    <script>
+        // نظام إدارة المستخدمين المتكامل مع كل النواقص
+        class UserManager {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('korvibe_users') || '[]');
+                this.currentUser = JSON.parse(localStorage.getItem('korvibe_currentUser') || 'null');
+                this.settings = JSON.parse(localStorage.getItem('korvibe_settings') || this.getDefaultSettings());
+                
+                // إعدادات المشرفين
+                this.adminEmails = [
+                    'frwkhans93@gmail.com', // بريدك الرئيسي
+                    'admin@korvibe.com',    // بريد احتياطي
+                    'moderator@korvibe.com' // مشرف مساعد
+                ];
+                
+                // إذا كان مسجل دخول، توجيه للصفحة المناسبة
+                if (this.currentUser) {
+                    this.redirectBasedOnRole(this.currentUser.email);
+                }
+                
+                // تهيئة المستخدمين الافتراضيين إذا لم يكن هناك مستخدمين
+                this.initializeDefaultUsers();
+            }
+
+            getDefaultSettings() {
+                return {
+                    appName: "KorVibe",
+                    appDescription: "مسلسلات كورية في مقاطع قصيرة",
+                    subscriptionPrice: 5,
+                    adsFrequency: 2,
+                    primaryColor: "#e50914",
+                    bgColor: "#0f0f0f",
+                    autoLogin: true,
+                    notifications: true,
+                    language: "ar"
+                };
+            }
+
+            initializeDefaultUsers() {
+                if (this.users.length === 0) {
+                    // إضافة مستخدم افتراضي للمشرف
+                    const adminUser = {
+                        id: 1,
+                        name: "مدير KorVibe",
+                        email: "frwkhans93@gmail.com",
+                        password: this.hashPassword("KorVibe@2024$Admin!Secure"),
+                        points: 1000,
+                        level: 10,
+                        joinedAt: new Date().toISOString(),
+                        favorites: [],
+                        watchHistory: [],
+                        isPremium: true,
+                        lastLogin: new Date().toISOString(),
+                        isAdmin: true,
+                        role: "super_admin"
+                    };
+                    
+                    // إضافة مستخدم تجريبي
+                    const testUser = {
+                        id: 2,
+                        name: "مستخدم تجريبي",
+                        email: "test@korvibe.com",
+                        password: this.hashPassword("Test123!"),
+                        points: 100,
+                        level: 1,
+                        joinedAt: new Date().toISOString(),
+                        favorites: [],
+                        watchHistory: [],
+                        isPremium: false,
+                        lastLogin: new Date().toISOString(),
+                        isAdmin: false,
+                        role: "user"
+                    };
+                    
+                    this.users.push(adminUser, testUser);
+                    this.save();
+                }
+            }
+
+            hashPassword(password) {
+                // تشفير بسيط - في الإنتاج استخدم bcrypt
+                return btoa(password + "KorVibeSalt2024");
+            }
+
+            verifyPassword(password, hashedPassword) {
+                return this.hashPassword(password) === hashedPassword;
+            }
+
+            register(name, email, password) {
+                // التحقق من صحة البيانات
+                if (!name || !email || !password) {
+                    throw new Error('جميع الحقول مطلوبة');
+                }
+
+                if (!this.isValidEmail(email)) {
+                    throw new Error('البريد الإلكتروني غير صالح');
+                }
+
+                if (password.length < 6) {
+                    throw new Error('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                }
+
+                if (!this.isStrongPassword(password)) {
+                    throw new Error('كلمة المرور ضعيفة. يجب أن تحتوي على أحرف كبيرة وصغيرة وأرقام ورموز');
+                }
+
+                if (this.users.find(user => user.email === email)) {
+                    throw new Error('البريد الإلكتروني مستخدم بالفعل');
+                }
+
+                const user = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    password: this.hashPassword(password),
+                    points: 100,
+                    level: 1,
+                    joinedAt: new Date().toISOString(),
+                    favorites: [],
+                    watchHistory: [],
+                    isPremium: false,
+                    lastLogin: new Date().toISOString(),
+                    isAdmin: this.isAdminEmail(email),
+                    role: this.isAdminEmail(email) ? "admin" : "user",
+                    settings: {
+                        notifications: true,
+                        autoPlay: true,
+                        videoQuality: "auto",
+                        language: "ar"
+                    }
+                };
+
+                this.users.push(user);
+                this.save();
+                
+                // تسجيل نشاط التسجيل
+                this.logActivity('user_registered', { email, name });
+                
+                return user;
+            }
+
+            login(email, password) {
+                const user = this.users.find(u => u.email === email && this.verifyPassword(password, u.password));
+                if (!user) {
+                    // تسجيل محاولة الدخول الفاشلة
+                    this.logActivity('login_failed', { email, reason: 'invalid_credentials' });
+                    throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                }
+                
+                user.lastLogin = new Date().toISOString();
+                user.loginCount = (user.loginCount || 0) + 1;
+                this.currentUser = user;
+                this.save();
+                
+                // تسجيل الدخول الناجح
+                this.logActivity('login_success', { email, name: user.name });
+                
+                return user;
+            }
+
+            // التحقق إذا كان البريد مشرفاً
+            isAdminEmail(email) {
+                return this.adminEmails.includes(email);
+            }
+
+            // التوجيه حسب الصلاحية
+            redirectBasedOnRole(email) {
+                if (this.isAdminEmail(email)) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+
+            // التحقق من قوة كلمة المرور
+            isStrongPassword(password) {
+                const strongRegex = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[@$!%?&])[A-Za-z\d@$!%?&]{8,}$/;
+                return strongRegex.test(password);
+            }
+
+            // التحقق من صحة البريد الإلكتروني
+            isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            // تسجيل النشاط
+            logActivity(type, data) {
+                const activities = JSON.parse(localStorage.getItem('korvibe_activities') || '[]');
+                
+                activities.push({
+                    type,
+                    data,
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent
+                });
+                
+                // حفظ آخر 500 نشاط فقط
+                if (activities.length > 500) {
+                    activities.shift();
+                }
+                
+                localStorage.setItem('korvibe_activities', JSON.stringify(activities));
+            }
+
+            logout() {
+                if (this.currentUser) {
+                    this.logActivity('logout', { email: this.currentUser.email });
+                }
+                this.currentUser = null;
+                localStorage.removeItem('korvibe_currentUser');
+            }
+
+            save() {
+                localStorage.setItem('korvibe_users', JSON.stringify(this.users));
+                localStorage.setItem('korvibe_settings', JSON.stringify(this.settings));
+                if (this.currentUser) {
+                    localStorage.setItem('korvibe_currentUser', JSON.stringify(this.currentUser));
+                }
+            }
+
+            isLoggedIn() {
+                return this.currentUser !== null;
+            }
+        }
+
+        const userManager = new UserManager();
+
+        // دوال الواجهة
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthElement = document.getElementById('register-strength');
+            let strength = 0;
+            let message = '';
+            let className = '';
+
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            switch(strength) {
+                case 0:
+                case 1:
+                case 2:
+                    message = 'ضعيفة ❌';
+                    className = 'strength-weak';
+                    break;
+                case 3:
+                case 4:
+                    message = 'متوسطة ⚠';
+                    className = 'strength-medium';
+                    break;
+                case 5:
+                    message = 'قوية ✅';
+                    className = 'strength-strong';
+                    break;
+            }
+
+            strengthElement.textContent = message;
+            strengthElement.className = 'password-strength ' + className;
+        }
+
+        function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+
+            if (password !== confirm) {
+                showError('⚠ كلمات المرور غير متطابقة');
+                return;
+            }
+
+            try {
+                const user = userManager.register(name, email, password);
+                
+                if (user.isAdmin) {
+                    showSuccess('🎖 تم إنشاء حساب مشرف! سيتم توجيهك إلى لوحة التحكم');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 2000);
+                } else {
+                    showSuccess('🎉 تم إنشاء الحساب بنجاح! تم منحك 100 نقطة ترحيبية');
+                    setTimeout(() => {
+                        showLogin();
+                    }, 2000);
+                }
+                
+                // تفريغ الحقول
+                document.getElementById('register-name').value = '';
+                document.getElementById('register-email').value = '';
+                document.getElementById('register-password').value = '';
+                document.getElementById('register-confirm').value = '';
+                document.getElementById('register-strength').textContent = '';
+            } catch (error) {
+                showError('❌ ' + error.message);
+            }
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const user = userManager.login(email, password);
+                
+                if (user.isAdmin) {
+                    showSuccess('🎖 تم التعرف عليك كمشرف! يتم توجيهك إلى لوحة التحكم');
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 1500);
+                } else {
+                    showSuccess('🎬 تم تسجيل الدخول بنجاح! يتم توجيهك إلى التطبيق');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                }
+            } catch (error) {
+                showError('❌ ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.style.color = '#ff6b6b';
+        }
+
+        function showSuccess(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.style.color = '#28a745';
+        }
+
+        // تفعيل الإدخال عند الضغط على Enter
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                if (document.getElementById('login-form').style.display !== 'none') {
+                    login();
+                } else {
+                    register();
+                }
+            }
+        });
+
+        // تحميل أي مستخدم مسجل مسبقاً
+        window.addEventListener('load', function() {
+            const savedEmail = localStorage.getItem('last_login_email');
+            if (savedEmail) {
+                document.getElementById('login-email').value = savedEmail;
+            }
+        });
+    </script>
+</body>
+</html>
